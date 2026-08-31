@@ -1,6 +1,9 @@
 %{
 #include <stdio.h>
 #include "parser.tab.h"
+
+void addLine();
+
 %}
 
 DIGITO    [0-9]
@@ -40,7 +43,8 @@ NUMERO    "-"?{DIGITO}+
 "true" {return TRUE;}
 {ID} {return ID;}
 {NUMERO} {return NUM;}
-[ \t\n]+    ; /* Ignorar espacios y saltos de línea */
+[\n] {addLine();}
+[ \t]+    ; /* Ignorar espacios y saltos de línea */
 .           { printf("Error léxico: %s\n", yytext); }
 
 %%

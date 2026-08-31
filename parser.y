@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <libgen.h>
 
+int lines = 0;
+void addLine(){
+    lines++;
+}
+
 extern FILE *yyin;
 int yylex(void);
 void yyerror(const char *s);
@@ -68,7 +73,7 @@ As:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+    fprintf(stderr, "Error: %s En la linea %d\n", s, lines);
 }
 
 int main(int argc, char *argv[]) {
@@ -85,6 +90,7 @@ int main(int argc, char *argv[]) {
 
     yyparse();
     fclose(yyin);
+    printf("%d", lines);
     return 0;
 }
 
