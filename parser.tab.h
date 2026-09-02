@@ -61,18 +61,18 @@ extern int yydebug;
     INT = 262,                     /* INT  */
     CONST = 263,                   /* CONST  */
     RETURN = 264,                  /* RETURN  */
-    LESSE = 265,                   /* LESSE  */
-    GREATERE = 266,                /* GREATERE  */
-    EQUAL = 267,                   /* EQUAL  */
-    NEQUAL = 268,                  /* NEQUAL  */
-    AND = 269,                     /* AND  */
-    OR = 270,                      /* OR  */
-    NOT = 271,                     /* NOT  */
-    ID = 272,                      /* ID  */
-    NUM = 273,                     /* NUM  */
-    TRUE = 274,                    /* TRUE  */
-    FALSE = 275,                   /* FALSE  */
-    BOOL = 276,                    /* BOOL  */
+    BOOL = 265,                    /* BOOL  */
+    LESSE = 266,                   /* LESSE  */
+    GREATERE = 267,                /* GREATERE  */
+    EQUAL = 268,                   /* EQUAL  */
+    NEQUAL = 269,                  /* NEQUAL  */
+    AND = 270,                     /* AND  */
+    OR = 271,                      /* OR  */
+    NOT = 272,                     /* NOT  */
+    ID = 273,                      /* ID  */
+    NUM = 274,                     /* NUM  */
+    TRUE = 275,                    /* TRUE  */
+    FALSE = 276,                   /* FALSE  */
     VOID = 277                     /* VOID  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -80,7 +80,18 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 18 "parser.y"
+
+    int num;
+    char *str;
+    struct Node *node;
+
+#line 92 "parser.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

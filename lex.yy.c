@@ -916,12 +916,12 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 44 "lexer.l"
-{return ID;}
+{yylval.str = strdup(yytext); return ID;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 45 "lexer.l"
-{return NUM;}
+{yylval.num = atoi(yytext); return NUM;}
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */

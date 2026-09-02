@@ -41,8 +41,8 @@ NUMERO    "-"?{DIGITO}+
 "/" {return '/';}
 "false" {return FALSE;}
 "true" {return TRUE;}
-{ID} {return ID;}
-{NUMERO} {return NUM;}
+{ID} {yylval.str = strdup(yytext); return ID;}
+{NUMERO} {yylval.num = atoi(yytext); return NUM;}
 [\n] {addLine();}
 [ \t]+    ; /* Ignorar espacios y saltos de línea */
 .           { printf("Error léxico: %s\n", yytext); }

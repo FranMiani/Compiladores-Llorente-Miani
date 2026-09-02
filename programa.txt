@@ -1,5 +1,5 @@
 int main(){
     int x;
-    x = 200 / 12
+    x = 200 / 12;
     return x;
 }
