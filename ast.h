@@ -1,6 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
+#include "simbolo.h"
+
 typedef enum {
     // Operaciones Aritméticas
     NODE_OP_ADD, NODE_OP_SUB, NODE_OP_MUL, NODE_OP_DIV,
@@ -20,17 +22,6 @@ typedef enum {
     NODE_OP_FUNC
     
 } NodeType;
-
-
-typedef enum {
-    INT1, BOOL1, NOT_TYPE
-} ExprType;
-
-typedef struct Simbolo{
-    ExprType exprType;
-    int value; 
-    char *name; 
-} Simbolo;
 
 typedef struct Node {
     NodeType type;

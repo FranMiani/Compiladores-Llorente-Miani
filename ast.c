@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "ast.h"
 
 Node* create_node(NodeType type, Simbolo *simb, Node *left, Node *right) {
