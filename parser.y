@@ -8,7 +8,7 @@
 
 SymbolTable *tabla;
 
-int lines = 0;
+int lines = 1;
 void addLine(){
     lines++;
 }
@@ -82,6 +82,7 @@ Exp:
             fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
             YYABORT;
         }
+        simb = create_simb($3->info->exprType, $1->info->value + $3->info->value, NULL);
         $$ = create_node(NODE_OP_ADD, simb, $1, $3);
         }
     | Exp '*' Exp {
@@ -90,6 +91,7 @@ Exp:
             fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
             YYABORT;
         }
+        simb = create_simb($3->info->exprType, $1->info->value * $3->info->value, NULL);
         $$ = create_node(NODE_OP_MUL, simb, $1, $3);
         }
     | Exp '-' Exp {
@@ -163,10 +165,15 @@ Exp:
         }
         $$ = create_node(NODE_OP_NEQUAL, simb, $1, $3);
         }
-    | '!'Exp {Simbolo *simb = create_simb(BOOL1, 0, NULL);
+    | '!'Exp {Simbolo *simb;
         if(BOOL1 != $2->info->exprType){
             fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
             YYABORT;
+        }
+        if($2->info->value==0){
+            simb = create_simb(BOOL1, 1, NULL);
+        }else{
+            simb = create_simb(BOOL1, 0, NULL);
         }
         $$ = create_node(NODE_OP_NOT, simb, $2, NULL);}
     | NUM {Simbolo *simb = create_simb(INT1, $1, NULL);
@@ -218,7 +225,8 @@ As:
             fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
             YYABORT;
         }
-        Simbolo *simb = create_simb(existente->exprType, 0, $1);
+        existente->value = $3->info->value;
+        Simbolo *simb = create_simb(existente->exprType, existente->value, $1);
         $$ = create_node(NODE_ASSIGN, simb, NULL, $3);
         }
     ;

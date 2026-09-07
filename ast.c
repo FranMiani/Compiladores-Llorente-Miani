@@ -16,7 +16,10 @@ void print_ast(Node *node, int indent) {
     if (!node) return;
     for (int i = 0; i < indent; i++) printf("  ");
     
-    printf("Tipo: %d", node->type);
+    printf("Tipo: %d  ", node->type);
+    if(node->info){
+        printf("Valor: %d", node->info->value);
+    }
     printf("\n");
     
     print_ast(node->left, indent + 1);
