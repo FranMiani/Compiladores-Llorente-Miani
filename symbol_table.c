@@ -28,6 +28,13 @@ Simbolo* insert_symbol(SymbolTable *table, ExprType type, char *name, int value)
     return s;
 }
 
+Simbolo* insert_symbolo(SymbolTable *table, Simbolo *s) {
+    if (!s) return NULL;
+    s->next = table->head;
+    table->head = s;
+    return s;
+}
+
 Simbolo* find_symbol(SymbolTable *table, char *name) {
     if (!name) return NULL;
     Simbolo *current = table->head;

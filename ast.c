@@ -11,14 +11,6 @@ Node* create_node(NodeType type, Simbolo *simb, Node *left, Node *right) {
     return node;
 }
 
-Simbolo* create_simb(ExprType exprtype, int value, char *name){
-    Simbolo *simb = (Simbolo*)malloc(sizeof(Simbolo));
-    simb->exprType = exprtype;
-    simb->value = value;
-    simb->name  = name;
-    return simb;
-}
-
 
 void print_ast(Node *node, int indent) {
     if (!node) return;

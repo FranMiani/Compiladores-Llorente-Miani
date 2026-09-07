@@ -74,6 +74,9 @@
 #include <string.h>
 #include <libgen.h>
 #include "ast.h"
+#include "symbol_table.h"
+
+SymbolTable *tabla;
 
 int lines = 0;
 void addLine(){
@@ -84,7 +87,7 @@ extern FILE *yyin;
 int yylex(void);
 void yyerror(const char *s);
 
-#line 88 "parser.tab.c"
+#line 91 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -541,10 +544,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    40,    40,    45,    50,    58,    59,    60,    61,    66,
-      67,    68,    69,    76,    80,    84,    88,    92,    95,    99,
-     103,   107,   111,   115,   119,   123,   127,   129,   131,   133,
-     135,   142,   146,   153
+       0,    43,    43,    48,    53,    61,    62,    63,    64,    69,
+      70,    71,    72,    79,    87,    95,   103,   111,   114,   118,
+     122,   126,   134,   142,   150,   158,   166,   172,   174,   176,
+     178,   190,   199,   211
 };
 #endif
 
@@ -1161,272 +1164,336 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* input: INT ID '(' ')' '{' Linea '}'  */
-#line 40 "parser.y"
+#line 43 "parser.y"
                                  {
-        Simbolo *simb = create_simb(INT1, NULL, (yyvsp[-5].str));
+        Simbolo *simb = create_simb(INT1, 0, (yyvsp[-5].str));
         (yyval.node) = create_node(NODE_OP_FUNC, simb, NULL, (yyvsp[-1].node));
         print_ast((yyval.node),0);
         }
-#line 1171 "parser.tab.c"
+#line 1174 "parser.tab.c"
     break;
 
   case 3: /* input: BOOL ID '(' ')' '{' Linea '}'  */
-#line 45 "parser.y"
+#line 48 "parser.y"
                                     {
-        Simbolo *simb = create_simb(BOOL1, NULL, (yyvsp[-5].str));
+        Simbolo *simb = create_simb(BOOL1, 0, (yyvsp[-5].str));
         (yyval.node) = create_node(NODE_OP_FUNC, simb, NULL, (yyvsp[-1].node));
         print_ast((yyval.node),0);
         }
-#line 1181 "parser.tab.c"
+#line 1184 "parser.tab.c"
     break;
 
   case 4: /* input: VOID ID '(' ')' '{' Linea '}'  */
-#line 50 "parser.y"
+#line 53 "parser.y"
                                     {
-        Simbolo *simb = create_simb(NOT_TYPE, NULL, (yyvsp[-5].str));
+        Simbolo *simb = create_simb(NOT_TYPE, 0, (yyvsp[-5].str));
         (yyval.node) = create_node(NODE_OP_FUNC, simb, NULL, (yyvsp[-1].node));
         print_ast((yyval.node),0);
         }
-#line 1191 "parser.tab.c"
+#line 1194 "parser.tab.c"
     break;
 
   case 5: /* Linea: Exp ';' Linea  */
-#line 58 "parser.y"
+#line 61 "parser.y"
                  {(yyval.node) = create_node(NODE_OP_NEWLINE, NULL, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1197 "parser.tab.c"
+#line 1200 "parser.tab.c"
     break;
 
   case 6: /* Linea: Dec ';' Linea  */
-#line 59 "parser.y"
+#line 62 "parser.y"
                    {(yyval.node) = create_node(NODE_OP_NEWLINE, NULL, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1203 "parser.tab.c"
+#line 1206 "parser.tab.c"
     break;
 
   case 7: /* Linea: As ';' Linea  */
-#line 60 "parser.y"
+#line 63 "parser.y"
                   {(yyval.node) = create_node(NODE_OP_NEWLINE, NULL, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1209 "parser.tab.c"
+#line 1212 "parser.tab.c"
     break;
 
   case 8: /* Linea: RETURN Exp ';' Linea  */
-#line 61 "parser.y"
+#line 64 "parser.y"
                            {
         Simbolo *simb = NULL;
         Node *node = create_node(NODE_OP_RETURN, simb, (yyvsp[-2].node), NULL);
         (yyval.node) = create_node(NODE_OP_NEWLINE, NULL, node, (yyvsp[0].node));
         }
-#line 1219 "parser.tab.c"
+#line 1222 "parser.tab.c"
     break;
 
   case 9: /* Linea: Exp ';'  */
-#line 66 "parser.y"
+#line 69 "parser.y"
              {(yyval.node) = (yyvsp[-1].node);}
-#line 1225 "parser.tab.c"
+#line 1228 "parser.tab.c"
     break;
 
   case 10: /* Linea: Dec ';'  */
-#line 67 "parser.y"
+#line 70 "parser.y"
              {(yyval.node) = (yyvsp[-1].node);}
-#line 1231 "parser.tab.c"
+#line 1234 "parser.tab.c"
     break;
 
   case 11: /* Linea: As ';'  */
-#line 68 "parser.y"
+#line 71 "parser.y"
             {(yyval.node) = (yyvsp[-1].node);}
-#line 1237 "parser.tab.c"
+#line 1240 "parser.tab.c"
     break;
 
   case 12: /* Linea: RETURN Exp ';'  */
-#line 69 "parser.y"
+#line 72 "parser.y"
                      {
         Simbolo *simb = NULL;
         (yyval.node) = create_node(NODE_OP_RETURN, simb, (yyvsp[-1].node), NULL);
         }
-#line 1246 "parser.tab.c"
+#line 1249 "parser.tab.c"
     break;
 
   case 13: /* Exp: Exp '+' Exp  */
-#line 76 "parser.y"
+#line 79 "parser.y"
                 {
         Simbolo *simb = NULL;
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_ADD, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1255 "parser.tab.c"
+#line 1262 "parser.tab.c"
     break;
 
   case 14: /* Exp: Exp '*' Exp  */
-#line 80 "parser.y"
+#line 87 "parser.y"
                   {
         Simbolo *simb = NULL;
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_MUL, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1264 "parser.tab.c"
+#line 1275 "parser.tab.c"
     break;
 
   case 15: /* Exp: Exp '-' Exp  */
-#line 84 "parser.y"
+#line 95 "parser.y"
                   {
         Simbolo *simb = NULL;
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_SUB, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1273 "parser.tab.c"
+#line 1288 "parser.tab.c"
     break;
 
   case 16: /* Exp: Exp '/' Exp  */
-#line 88 "parser.y"
+#line 103 "parser.y"
                   {
         Simbolo *simb = NULL;
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_DIV, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1282 "parser.tab.c"
+#line 1301 "parser.tab.c"
     break;
 
   case 17: /* Exp: '(' Exp ')'  */
-#line 92 "parser.y"
+#line 111 "parser.y"
                 {
         (yyval.node) = (yyvsp[-1].node);
         }
-#line 1290 "parser.tab.c"
+#line 1309 "parser.tab.c"
     break;
 
   case 18: /* Exp: Exp EQUAL Exp  */
-#line 95 "parser.y"
+#line 114 "parser.y"
                     {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
         (yyval.node) = create_node(NODE_OP_EQUAL, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1299 "parser.tab.c"
+#line 1318 "parser.tab.c"
     break;
 
   case 19: /* Exp: Exp AND Exp  */
-#line 99 "parser.y"
+#line 118 "parser.y"
                   {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
         (yyval.node) = create_node(NODE_OP_AND, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1308 "parser.tab.c"
+#line 1327 "parser.tab.c"
     break;
 
   case 20: /* Exp: Exp OR Exp  */
-#line 103 "parser.y"
+#line 122 "parser.y"
                  {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
         (yyval.node) = create_node(NODE_OP_OR, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1317 "parser.tab.c"
+#line 1336 "parser.tab.c"
     break;
 
   case 21: /* Exp: Exp '<' Exp  */
-#line 107 "parser.y"
+#line 126 "parser.y"
                   {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_LESS, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
-#line 1326 "parser.tab.c"
+#line 1349 "parser.tab.c"
     break;
 
   case 22: /* Exp: Exp '>' Exp  */
-#line 111 "parser.y"
+#line 134 "parser.y"
                   {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_GREAT, simb, (yyvsp[-2].node), (yyvsp[0].node));
-        }
-#line 1335 "parser.tab.c"
-    break;
-
-  case 23: /* Exp: Exp LESSE Exp  */
-#line 115 "parser.y"
-                    {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
-        (yyval.node) = create_node(NODE_OP_LESSE, simb, (yyvsp[-2].node), (yyvsp[0].node));
-        }
-#line 1344 "parser.tab.c"
-    break;
-
-  case 24: /* Exp: Exp GREATERE Exp  */
-#line 119 "parser.y"
-                       {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
-        (yyval.node) = create_node(NODE_OP_GREATE, simb, (yyvsp[-2].node), (yyvsp[0].node));
-        }
-#line 1353 "parser.tab.c"
-    break;
-
-  case 25: /* Exp: Exp NEQUAL Exp  */
-#line 123 "parser.y"
-                     {
-        Simbolo *simb = create_simb(BOOL1, NULL, NULL);
-        (yyval.node) = create_node(NODE_OP_NEQUAL, simb, (yyvsp[-2].node), (yyvsp[0].node));
         }
 #line 1362 "parser.tab.c"
     break;
 
+  case 23: /* Exp: Exp LESSE Exp  */
+#line 142 "parser.y"
+                    {
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
+        (yyval.node) = create_node(NODE_OP_LESSE, simb, (yyvsp[-2].node), (yyvsp[0].node));
+        }
+#line 1375 "parser.tab.c"
+    break;
+
+  case 24: /* Exp: Exp GREATERE Exp  */
+#line 150 "parser.y"
+                       {
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType || (yyvsp[-2].node)->info->exprType != INT1){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
+        (yyval.node) = create_node(NODE_OP_GREATE, simb, (yyvsp[-2].node), (yyvsp[0].node));
+        }
+#line 1388 "parser.tab.c"
+    break;
+
+  case 25: /* Exp: Exp NEQUAL Exp  */
+#line 158 "parser.y"
+                     {
+        Simbolo *simb = create_simb(BOOL1, 0, NULL);
+        if((yyvsp[0].node)->info->exprType != (yyvsp[-2].node)->info->exprType){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
+        (yyval.node) = create_node(NODE_OP_NEQUAL, simb, (yyvsp[-2].node), (yyvsp[0].node));
+        }
+#line 1401 "parser.tab.c"
+    break;
+
   case 26: /* Exp: '!' Exp  */
-#line 127 "parser.y"
-             {Simbolo *simb = create_simb(BOOL1, NULL, NULL);
+#line 166 "parser.y"
+             {Simbolo *simb = create_simb(BOOL1, 0, NULL);
+        if(BOOL1 != (yyvsp[0].node)->info->exprType){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
         (yyval.node) = create_node(NODE_OP_NOT, simb, (yyvsp[0].node), NULL);}
-#line 1369 "parser.tab.c"
+#line 1412 "parser.tab.c"
     break;
 
   case 27: /* Exp: NUM  */
-#line 129 "parser.y"
+#line 172 "parser.y"
           {Simbolo *simb = create_simb(INT1, (yyvsp[0].num), NULL);
         (yyval.node) = create_node(NODE_VAL_NUM, simb, NULL, NULL);}
-#line 1376 "parser.tab.c"
+#line 1419 "parser.tab.c"
     break;
 
   case 28: /* Exp: FALSE  */
-#line 131 "parser.y"
+#line 174 "parser.y"
             {Simbolo *simb = create_simb(BOOL1, 0, NULL);
         (yyval.node) = create_node(NODE_VAL_FALSE, simb, NULL, NULL);}
-#line 1383 "parser.tab.c"
-    break;
-
-  case 29: /* Exp: TRUE  */
-#line 133 "parser.y"
-           {Simbolo *simb = create_simb(BOOL1, 1, NULL);
-        (yyval.node) = create_node(NODE_VAL_TRUE, simb, NULL, NULL);}
-#line 1390 "parser.tab.c"
-    break;
-
-  case 30: /* Exp: ID  */
-#line 135 "parser.y"
-         {
-        Simbolo *simb = create_simb(NOT_TYPE, NULL, (yyvsp[0].str));
-        (yyval.node) = create_node(NODE_ID, simb, NULL, NULL);
-        }
-#line 1399 "parser.tab.c"
-    break;
-
-  case 31: /* Dec: INT ID  */
-#line 142 "parser.y"
-           {
-        Simbolo *simb = create_simb(INT1, NULL, (yyvsp[0].str));
-        (yyval.node) = create_node(NODE_DECLARATION, simb, NULL, NULL);
-        }
-#line 1408 "parser.tab.c"
-    break;
-
-  case 32: /* Dec: BOOL ID  */
-#line 146 "parser.y"
-               {
-        Simbolo *simb = create_simb(BOOL1, NULL, (yyvsp[0].str));
-        (yyval.node) = create_node(NODE_DECLARATION, simb, NULL, NULL);
-        }
-#line 1417 "parser.tab.c"
-    break;
-
-  case 33: /* As: ID '=' Exp  */
-#line 153 "parser.y"
-               {
-        Simbolo *simb = create_simb(NOT_TYPE, NULL, (yyvsp[-2].str)); 
-        (yyval.node) = create_node(NODE_ASSIGN, simb, NULL, (yyvsp[0].node));
-        }
 #line 1426 "parser.tab.c"
     break;
 
+  case 29: /* Exp: TRUE  */
+#line 176 "parser.y"
+           {Simbolo *simb = create_simb(BOOL1, 1, NULL);
+        (yyval.node) = create_node(NODE_VAL_TRUE, simb, NULL, NULL);}
+#line 1433 "parser.tab.c"
+    break;
 
-#line 1430 "parser.tab.c"
+  case 30: /* Exp: ID  */
+#line 178 "parser.y"
+         {
+        Simbolo *existente = find_symbol(tabla, (yyvsp[0].str));
+        if (existente == NULL) {
+            fprintf(stderr, "Error semantico: variable '%s' no declarada. En la linea %d\n", (yyvsp[0].str), lines);
+            YYABORT;
+        }
+        Simbolo *simb = existente;
+        (yyval.node) = create_node(NODE_ID, simb, NULL, NULL);
+        }
+#line 1447 "parser.tab.c"
+    break;
+
+  case 31: /* Dec: INT ID  */
+#line 190 "parser.y"
+           {
+        if (find_symbol(tabla, (yyvsp[0].str)) != NULL) {
+            fprintf(stderr, "Error semantico: variable '%s' ya declarada. En la linea %d\n", (yyvsp[0].str), lines);
+            YYABORT;
+        }
+        Simbolo *simb = create_simb(INT1, 0, (yyvsp[0].str));
+        insert_symbolo(tabla, simb);
+        (yyval.node) = create_node(NODE_DECLARATION, simb, NULL, NULL);
+        }
+#line 1461 "parser.tab.c"
+    break;
+
+  case 32: /* Dec: BOOL ID  */
+#line 199 "parser.y"
+               {
+        if (find_symbol(tabla, (yyvsp[0].str)) != NULL) {
+            fprintf(stderr, "Error semantico: variable '%s' ya declarada. En la linea %d\n", (yyvsp[0].str), lines);
+            YYABORT;
+        }
+        Simbolo *simb = create_simb(BOOL1, 0, (yyvsp[0].str));
+        insert_symbolo(tabla, simb);
+        (yyval.node) = create_node(NODE_DECLARATION, simb, NULL, NULL);
+        }
+#line 1475 "parser.tab.c"
+    break;
+
+  case 33: /* As: ID '=' Exp  */
+#line 211 "parser.y"
+               {
+        Simbolo *existente = find_symbol(tabla, (yyvsp[-2].str));
+        if (existente == NULL) {
+            fprintf(stderr, "Error semantico: variable '%s' no declarada. En la linea %d\n", (yyvsp[-2].str), lines);
+            YYABORT;
+        }
+        if(existente->exprType != (yyvsp[0].node)->info->exprType){
+            fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
+            YYABORT;
+        }
+        Simbolo *simb = create_simb(existente->exprType, 0, (yyvsp[-2].str));
+        (yyval.node) = create_node(NODE_ASSIGN, simb, NULL, (yyvsp[0].node));
+        }
+#line 1493 "parser.tab.c"
+    break;
+
+
+#line 1497 "parser.tab.c"
 
       default: break;
     }
@@ -1619,7 +1686,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 159 "parser.y"
+#line 226 "parser.y"
 
 
 void yyerror(const char *s) {
@@ -1638,9 +1705,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    tabla = init_table();
+
     yyparse();
     fclose(yyin);
+
+    free_table(tabla);
     printf("%d", lines);
     return 0;
 }
-
