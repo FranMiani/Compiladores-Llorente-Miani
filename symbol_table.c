@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "symbol_table.h"
+#include "simbolo.h"
 
 SymbolTable* init_table() {
     SymbolTable *table = (SymbolTable*)malloc(sizeof(SymbolTable));
@@ -18,6 +19,10 @@ Simbolo* create_simb(ExprType exprtype, int value, char *name) {
     s->name = name ? strdup(name) : NULL;
     s->next = NULL;
     return s;
+}
+
+void add_dir(Simbolo *sim, char *direccion){
+    sim->dir = direccion;
 }
 
 Simbolo* insert_symbol(SymbolTable *table, ExprType type, char *name, int value) {

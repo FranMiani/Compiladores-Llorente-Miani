@@ -9,8 +9,10 @@ typedef struct Simbolo {
     ExprType exprType;
     int value; 
     char *name;
+    char *dir;
     struct Simbolo *next;
 } Simbolo;
+
 
 
 #endif

@@ -5,12 +5,27 @@
 #include <libgen.h>
 #include "ast.h"
 #include "symbol_table.h"
-
+#include "instruccion.h"
+#define _GNU_SOURCE
 SymbolTable *tabla;
+
+Pila *pila;
+Node *father;
 
 int lines = 1;
 void addLine(){
     lines++;
+}
+int temps = 0;
+char registros[3] = {'A', 'B', 'C'};
+
+char* registro_correspondiente() {
+    char *r = malloc(2);
+    temps = temps % 3;
+    r[0] = registros[temps++];
+    r[1] = '\0';
+
+    return r;
 }
 
 extern FILE *yyin;
@@ -43,17 +58,17 @@ input:
     INT ID '(' ')' '{' Linea '}' {
         Simbolo *simb = create_simb(INT1, 0, $2);
         $$ = create_node(NODE_OP_FUNC, simb, NULL, $6);
-        print_ast($$,0);
+        father = $$;
         }
     | BOOL ID '(' ')' '{' Linea '}' {
         Simbolo *simb = create_simb(BOOL1, 0, $2);
         $$ = create_node(NODE_OP_FUNC, simb, NULL, $6);
-        print_ast($$,0);
+        father = $$;
         }
     | VOID ID '(' ')' '{' Linea '}' {
         Simbolo *simb = create_simb(NOT_TYPE, 0, $2);
         $$ = create_node(NODE_OP_FUNC, simb, NULL, $6);
-        print_ast($$,0);
+        father = $$;
         }
     ;
 
@@ -70,7 +85,18 @@ Linea:
     | Dec';' {$$ = $1;}
     | As';' {$$ = $1;}
     | RETURN Exp ';' {
-        Simbolo *simb = NULL;
+        Simbolo *simb = create_simb($2->info->exprType, 0, NULL);
+        char *parametro1=NULL;
+        if($2->type >=13 && $2->type <=15){
+            asprintf(&parametro1, "%d", $2->info->value);
+        }else{
+            if($2->type == 20){
+                parametro1 = $2->info->name;
+            }else{
+                parametro1 = $2->info->dir;
+            }
+        }
+        add_inst(pila,create_inst("RET",NULL, NULL, parametro1));
         $$ = create_node(NODE_OP_RETURN, simb, $2, NULL);
         }
     ;
@@ -82,8 +108,31 @@ Exp:
             fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
             YYABORT;
         }
-        simb = create_simb($3->info->exprType, $1->info->value + $3->info->value, NULL);
+        simb = create_simb($3->info->exprType, 0, NULL);
+        add_dir(simb, registro_correspondiente());
+        char *parametro1=NULL;
+        if($1->type >=13 && $1->type <=15){
+            asprintf(&parametro1, "%d", $1->info->value);
+        }else{
+            if($1->type == 20){
+                parametro1 = $1->info->name;
+            }else{
+                parametro1 = $1->info->dir;
+            }
+        }
+        char *parametro2=NULL;
+        if($3->type >=13 && $3->type <=15){
+            asprintf(&parametro2, "%d", $3->info->value);
+        }else{
+            if($3->type == 20){
+                parametro2 = $3->info->name;
+            }else{
+                parametro2 = $3->info->dir;
+            }
+        }
+        add_inst(pila,create_inst("ADD",parametro1, parametro2, simb->dir));
         $$ = create_node(NODE_OP_ADD, simb, $1, $3);
+        
         }
     | Exp '*' Exp {
         Simbolo *simb = NULL;
@@ -91,7 +140,29 @@ Exp:
             fprintf(stderr, "Error de tipo. En la linea %d\n", lines);
             YYABORT;
         }
-        simb = create_simb($3->info->exprType, $1->info->value * $3->info->value, NULL);
+        simb = create_simb($3->info->exprType, 0, NULL);
+        add_dir(simb, registro_correspondiente());
+        char *parametro1=NULL;
+        if($1->type >=13 && $1->type <=15){
+            asprintf(&parametro1, "%d", $1->info->value);
+        }else{
+            if($1->type == 20){
+                parametro1 = $1->info->name;
+            }else{
+                parametro1 = $1->info->dir;
+            }
+        }
+        char *parametro2=NULL;
+        if($3->type >=13 && $3->type <=15){
+            asprintf(&parametro2, "%d", $3->info->value);
+        }else{
+            if($3->type == 20){
+                parametro2 = $3->info->name;
+            }else{
+                parametro2 = $3->info->dir;
+            }
+        }
+        add_inst(pila,create_inst("MUL",parametro1, parametro2, simb->dir));
         $$ = create_node(NODE_OP_MUL, simb, $1, $3);
         }
     | Exp '-' Exp {
@@ -227,6 +298,17 @@ As:
         }
         existente->value = $3->info->value;
         Simbolo *simb = create_simb(existente->exprType, existente->value, $1);
+        char *parametro1;
+        if($3->type >=13 && $3->type <=15){
+            asprintf(&parametro1, "%d", $3->info->value);
+        }else{
+            if($3->type == 20){
+                parametro1 = $3->info->name;
+            }else{
+                parametro1 = $3->info->dir;
+            }
+        }
+        add_inst(pila,create_inst("MOV",parametro1, NULL, $1));
         $$ = create_node(NODE_ASSIGN, simb, NULL, $3);
         }
     ;
@@ -238,6 +320,9 @@ void yyerror(const char *s) {
 }
 
 int main(int argc, char *argv[]) {
+
+    pila = crear_pila();
+    
     if (argc < 2) {
         fprintf(stderr, "Uso: %s <archivo_a_compilar>\n", basename(argv[0]));
         return 1;
@@ -254,7 +339,9 @@ int main(int argc, char *argv[]) {
     yyparse();
     fclose(yyin);
 
+    print_pila(pila);
+
     free_table(tabla);
-    printf("%d", lines);
+    printf("Lineas: %d", lines);
     return 0;
 }

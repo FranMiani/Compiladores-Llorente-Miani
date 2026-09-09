@@ -13,5 +13,7 @@ Simbolo* insert_symbol(SymbolTable *table, ExprType type, char *name, int value)
 Simbolo* find_symbol(SymbolTable *table, char *name);
 void free_table(SymbolTable *table);
 Simbolo* create_simb(ExprType exprtype, int value, char *name);
+Simbolo* insert_symbolo(SymbolTable *table, Simbolo *s);
+void add_dir(Simbolo *sim, char *direccion);
 
 #endif

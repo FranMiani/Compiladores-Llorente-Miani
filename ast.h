@@ -34,5 +34,6 @@ Node* create_node(NodeType type, Simbolo *simb, Node *left, Node *right);
 Simbolo* create_simb(ExprType exprtype, int value, char *name);
 void print_ast(Node *node, int indent);
 void free_ast(Node *node);
+void print_postorden(Node *node);
 
 #endif
