@@ -2,5 +2,5 @@
 
 bison -d parser.y;
 flex lexer.l;
-gcc lex.yy.c ast.c parser.tab.c -o compilador;
-./run_tests.sh;
+gcc parser.tab.c lex.yy.c ast.c instruccion.c symbol_table.c -o compilador;
+./compilador programa.txt;
